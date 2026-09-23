@@ -40,6 +40,18 @@ npx skills add zhamann/skills --skill natural-voice-editing
 
 Source: [`natural-voice-editing/SKILL.md`](./natural-voice-editing/SKILL.md)
 
+### Ship
+
+Organize completed work into coherent commits and independent or stacked pull requests, address checks and reviews, and merge when ready.
+
+Install with:
+
+```bash
+npx skills add zhamann/skills --skill ship
+```
+
+Source: [`ship/SKILL.md`](./ship/SKILL.md)
+
 ## License
 
 MIT
