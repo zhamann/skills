@@ -31,31 +31,15 @@ Push only branches owned by this task. Avoid destructive resets, ordinary force 
 
 Open independent PRs against the intended base. Open a stack from bottom to top, with each child targeting the branch immediately below it. Use GitHub's stack features when available; ordinary PRs with explicit parent bases are a valid fallback. Before publishing each PR, confirm its diff contains only its intended unit. Select a concise title describing the outcome.
 
-Use this PR body structure, omitting empty or inapplicable details:
+Write the shortest PR description that lets a reviewer understand what changed, why, and how it was checked. For a small PR, use a short paragraph and a verification line:
 
 ```markdown
-## Summary
+Fix the reminder using the previous day's date after midnight. The date now comes from the user's timezone.
 
-- What changed and why, in the project's own terms.
-- The key design decision, if a reviewer needs it.
-
-## Evidence
-
-- Before → after: observable behavior, output, or screenshot when useful.
-- Verification: exact relevant tests/builds and their results; say what could not be run.
-
-## Merge Danger
-
-- Reversibility: how this change can be rolled back, or why it cannot.
-- Blast radius: concrete behavior, users, data, or systems affected.
-
-## Stack
-
-- Position: 2 of 3; base: [parent PR]; follow-up: [child PR if known].
-- Review this PR against its parent branch; merge from the bottom up.
+Verification: The midnight-boundary test and relevant checks pass.
 ```
 
-Include `## Stack` only for PRs in a stack, and update links once the stack exists. A small diagram or diff sketch belongs in Summary only when it clarifies the change. Give actual evidence and specific risks; do not manufacture before/after results or inflate low-risk PRs with boilerplate.
+For larger changes, use `## Summary` and `## Verification` when headings help readers scan. Add design decisions, before/after evidence, screenshots, rollout steps, or risks when they affect review or merging. State relevant checks that could not be run. For a stack, link the parent PR, identify the review base and merge order, and update links when the stack exists. Do not fill sections with boilerplate or claim unobserved results.
 
 ## 4. Watch, repair, and merge
 
@@ -72,25 +56,11 @@ Verify each PR's merged state and resulting commit on the intended base. Leave u
 
 ## 5. Report to the user
 
-Lead with the outcome. For one PR, use a linked sentence:
+Lead with the verified outcome and link the PRs. Match the length to what the user needs: a straightforward merge may need only a sentence, while several PRs or different statuses may warrant compact bullets or a table. Mention checks, meaningful caveats, or remaining work when they affect the outcome; do not restate the PR description.
 
-```markdown
-Merged [#42: concise title](PR URL) into `main`.
-Verification: local tests; final CI status.
-```
+For example: `Merged [#42: Fix reminder timezone](PR URL). Tests and CI passed.`
 
-For several PRs, use a compact table in dependency order:
-
-```markdown
-| PR | Change | Result |
-| --- | --- | --- |
-| [#42](PR URL) | Shared model | Merged |
-| [#43](PR URL) | API using model | Merged |
-
-Verification: relevant local tests and final CI status for each PR.
-```
-
-Add `Remaining:` only for exact blockers, unmerged PRs, or intentional local changes. If blocked, lead with what was completed, link open PRs, identify the specific gate and next action, and state which local changes remain untouched. Never report a PR as merged until its merged state is verified.
+If blocked, link the open PRs, name the exact gate and next action, and identify intentional local changes left untouched. Never report a PR as merged until its merged state is verified.
 
 ## Principle check
 
