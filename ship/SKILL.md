@@ -1,11 +1,11 @@
 ---
 name: ship
-description: Turn completed work, including mixed uncommitted changes, into coherent commits and one or more GitHub pull requests; use independent or stacked PRs according to dependencies, monitor checks and reviews, fix issues, and merge. Use when asked to ship, land, or take code changes through the complete PR lifecycle.
+description: Turn completed work, including mixed uncommitted changes, into coherent commits and one or more GitHub pull requests; use independent or stacked PRs according to dependencies, monitor checks and reviews, fix issues, and merge when requested. Use when asked to open a PR, watch for feedback, ship, land, or handle any portion of the PR lifecycle.
 ---
 
 # Ship
 
-Take intentional code changes through a verified merge. Invoking this skill authorizes branching, commits, PR creation, corrective pushes, and merging once the gates below pass. Follow narrower instructions such as "open PRs but leave them unmerged."
+Carry intentional code changes through the endpoint the user requests. Opening a PR, monitoring it, and merging it are distinct outcomes. Treat "ship" or "land" as a request for verified merge; a request to open a PR and watch for feedback ends with the PR open. Complete prerequisite branching, commits, and corrective pushes within that scope.
 
 ## 1. Inventory and partition
 
@@ -43,16 +43,16 @@ For larger changes, use `## Summary` and `## Verification` when headings help re
 
 ## 4. Watch, repair, and merge
 
-Monitor every open PR in the same session, normally polling every 30–60 seconds. Use live PR state, checks and failed-job logs, published reviews and comments, and paginated unresolved review threads. Inspect feedback already present at the first pass. Ignore unpublished reviews. A passing result on an old SHA does not validate a new push or a changed base.
+Monitor PRs in scope in the same session, normally polling every 30–60 seconds. Use live PR state, checks and failed-job logs, published reviews and comments, and paginated unresolved review threads. Inspect feedback already present at the first pass. Ignore unpublished reviews. A passing result on an old SHA does not validate a new push or a changed base.
 
 - Verify feedback against the latest code. Fix valid issues in the appropriate unit, run focused checks, commit, push, and recheck that PR and any descendants. Resolve your own or automated threads only after verifying the fix; let other humans review their threads unless the user authorized resolution. Surface requests that need a human response or renewed approval.
 - Diagnose failed checks before acting. Fix branch-related failures at their source; retry likely transient failures up to three times. Stop with a precise blocker when a recurring failure has no new diagnosis or an external service is unavailable.
 - When the base moves, a lower layer changes, or a stack is rebased or retargeted, inspect every affected diff and review state again. Ensure each remaining child still contains only its own change. Rerun checks required for the resulting heads. Use the repository's stack workflow if supported; otherwise update dependent branches carefully and verify the resulting PR bases.
-- Continue watching pending checks and required or explicitly requested reviews. If no checks appear, allow expected workflows to register and inspect repository settings before concluding none apply. Do not invent an optional reviewer as a merge gate.
+- Continue watching pending checks and required or explicitly requested reviews until the requested endpoint is reached or a blocker remains. If no feedback arrives during the session, report the current state. If no checks appear, allow expected workflows to register and inspect repository settings before concluding none apply. Do not invent an optional reviewer as a merge gate.
 
-Merge each independent PR once its gates pass. Merge stacked PRs from the bottom up, verifying the next child's base, diff, checks, and approvals after each parent merge; a stack tool may land multiple layers together only if every included PR is ready. Honor branch protections and the repository's merge strategy. Never self-approve or use an admin bypass. Before each merge, freshly confirm the latest head, applicable checks, valid required approvals, absence of actionable feedback and unresolved threads, and mergeability. If a person must approve or a permission blocks progress, keep watching while the session can run or report the blocker; do not imply background monitoring continues after the session.
+When merging is in scope, merge independent PRs once their gates pass and stacks from the bottom up. After each parent merge, verify the next child's base, diff, checks, and approvals; a stack tool may land multiple layers together only if every included PR is ready. Honor branch protections and the repository's merge strategy. Never self-approve or use an admin bypass. Before each merge, freshly confirm the latest head, applicable checks, valid required approvals, absence of actionable feedback and unresolved threads, and mergeability. If a person must approve or a permission blocks progress, keep watching while the session can run or report the blocker.
 
-Verify each PR's merged state and resulting commit on the intended base. Leave unrelated local changes intact.
+After each merge, verify the PR's merged state and resulting commit on the intended base. Fetch the remote, fast-forward local target branches, update dependent local branches and worktrees in a stack, and return to the updated base from a merged task branch. Remove owned merged task branches once no longer needed. Preserve unrelated staged and unstaged changes; if a local branch cannot be updated safely, leave it intact and report the pending sync.
 
 ## 5. Report to the user
 
@@ -60,7 +60,7 @@ Lead with the verified outcome and link the PRs. Match the length to what the us
 
 For example: `Merged [#42: Fix reminder timezone](PR URL). Tests and CI passed.`
 
-If blocked, link the open PRs, name the exact gate and next action, and identify intentional local changes left untouched. Never report a PR as merged until its merged state is verified.
+If the requested endpoint leaves PRs open, report observed checks and feedback, any pending next action, and that monitoring ends with this session. If blocked, link the open PRs, name the exact gate and next action, and identify intentional local changes left untouched. Never report a PR as merged until its merged state is verified.
 
 ## Principle check
 
