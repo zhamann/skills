@@ -4,41 +4,41 @@ Agent skills maintained by Zac Hamann.
 
 ## Available skills
 
-### Principle-Oriented Prompt Editing
+### Prompt
 
 Maintain prompts as clear, minimal specifications by expressing general principles instead of accumulating unnecessary complexity.
 
 Install with:
 
 ```bash
-npx skills add zhamann/skills --skill principle-oriented-prompt-editing
+npx skills add zhamann/skills --skill prompt
 ```
 
-Source: [`principle-oriented-prompt-editing/SKILL.md`](./principle-oriented-prompt-editing/SKILL.md)
+Source: [`prompt/SKILL.md`](./prompt/SKILL.md)
 
-### Principle-Oriented Code Engineering
+### Code
 
 Write and refactor code as a clear, minimal expression of intended behavior, favoring coherent design principles over accumulated patches and speculative abstractions.
 
 Install with:
 
 ```bash
-npx skills add zhamann/skills --skill principle-oriented-code-engineering
+npx skills add zhamann/skills --skill code
 ```
 
-Source: [`principle-oriented-code-engineering/SKILL.md`](./principle-oriented-code-engineering/SKILL.md)
+Source: [`code/SKILL.md`](./code/SKILL.md)
 
-### Natural Voice Editing
+### Write
 
 Draft or revise prose so it sounds specific, direct, and natural while preserving the author's meaning and intended voice.
 
 Install with:
 
 ```bash
-npx skills add zhamann/skills --skill natural-voice-editing
+npx skills add zhamann/skills --skill write
 ```
 
-Source: [`natural-voice-editing/SKILL.md`](./natural-voice-editing/SKILL.md)
+Source: [`write/SKILL.md`](./write/SKILL.md)
 
 ### Ship
 
