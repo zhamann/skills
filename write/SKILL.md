@@ -1,9 +1,9 @@
 ---
-name: natural-voice-editing
+name: write
 description: Draft or revise prose so it sounds specific, direct, and natural while preserving the author's meaning and intended voice. Use for general writing, not code or text whose wording must remain exact.
 ---
 
-# Natural voice editing
+# Write
 
 ## Objective
 

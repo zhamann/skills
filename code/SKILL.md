@@ -1,9 +1,9 @@
 ---
-name: principle-oriented-code-engineering
+name: code
 description: Write and refactor code as a clear, minimal expression of intended behavior, favoring coherent design principles over accumulated patches and speculative abstractions.
 ---
 
-# Principle-oriented code engineering
+# Code
 
 ## Objective
 

@@ -1,9 +1,9 @@
 ---
-name: principle-oriented-prompt-editing
+name: prompt
 description: Maintain prompts as clear, minimal specifications by expressing general principles instead of accumulating unnecessary complexity.
 ---
 
-# Principle-Oriented Prompt Editing
+# Prompt
 
 ## Objective
 
