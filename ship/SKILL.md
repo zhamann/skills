@@ -1,37 +1,51 @@
 ---
 name: ship
-description: Turn completed work, including mixed uncommitted changes, into coherent commits and one or more GitHub pull requests; use independent or stacked PRs according to dependencies, monitor checks and reviews, fix issues, and merge when requested. Use when asked to open a PR, watch for feedback, ship, land, or handle any portion of the PR lifecycle.
+description: Turn completed work, including mixed uncommitted changes, into coherent commits and one or more GitHub pull requests, independent or stacked according to their dependencies. Monitor checks and reviews, fix issues, and merge when requested. Use when asked to open a PR, watch for feedback, ship, land, or handle any part of the PR lifecycle.
 ---
 
 # Ship
 
-Carry intentional code changes through the endpoint the user requests. Opening a PR, monitoring it, and merging it are distinct outcomes. Treat "ship" or "land" as a request for verified merge; a request to open a PR and watch for feedback ends with the PR open. Complete prerequisite branching, commits, and corrective pushes within that scope.
+## Objective
 
-## 1. Inventory and partition
+Carry intentional code changes to the endpoint the user asks for, and no further:
 
-Read repository instructions and inspect the current branch, base branch, remote, existing PRs, the full `base...HEAD` diff, staged and unstaged changes, and untracked files. Check for credentials, generated files, and other unintended content before staging. Include all intentional work in scope unless the user specified a subset; preserve unrelated or uncertain changes and ask about ownership only when the answer changes what can safely ship.
+- **Open:** create the PRs and leave them open.
+- **Watch:** open or continue PRs, then address checks and reviews during the session; the PRs stay open.
+- **Ship / land:** merge and verify the result.
 
-Identify coherent units of behavior before committing. Group the code, tests, and documentation for each unit together, even when they occupy different files; separate unrelated behavior even when it occupies one file. Use selective hunk staging or equivalent isolation for mixed files. Keep each commit reviewable and valid in the sequence in which it will land. Do not split a single dependent change merely to make more PRs.
+Do the prerequisite branching, committing, and corrective pushes within that scope. Never report an outcome you have not verified.
 
-Choose the smallest useful PR graph:
+## 1. Inspect and partition
 
-- Put closely related commits in one PR when they share one purpose and can be reviewed and reverted together.
-- Use separate PRs from the same base for independent changes. Each must build and test without the other.
-- Stack PRs only when one change needs another to compile, test, or make sense. Put shared foundations below consumers; each PR should show only its own layer against its parent branch.
+Read the repository's instructions. Inspect the current and base branches, the remote, existing PRs, the full `base...HEAD` diff, staged and unstaged changes, and untracked files. Before staging, check for credentials, generated files, and other unintended content.
 
-Summarize the proposed grouping and dependencies in a brief progress update, then proceed when the boundaries are clear. If an apparently independent change actually relies on another, revise the graph instead of publishing a misleading diff. Check for an existing PR and continue it when appropriate rather than duplicating it.
+Include all intentional work unless the user named a subset. Preserve unrelated or uncertain changes, and ask about ownership only when the answer changes what can safely ship.
+
+Group changes into units of behavior, not files. Keep a unit's code, tests, and docs together even across files; separate unrelated behavior even within one file, using selective hunk staging. Each commit should be reviewable and valid in the order it will land.
+
+Choose the smallest PR graph that keeps boundaries honest:
+
+- **One PR** for related commits that share a purpose and can be reviewed and reverted together.
+- **Independent PRs** from the same base for changes that build and test without each other.
+- **Stacked PRs** only when one change needs another to compile, test, or make sense. Put foundations below consumers; each PR shows only its own layer against its parent.
+
+Don't split a single dependent change just to make more PRs. If an apparently independent change turns out to rely on another, revise the graph rather than publish a misleading diff. Continue an existing PR instead of duplicating it. Share the proposed grouping in a brief progress update and proceed once the boundaries are clear.
 
 ## 2. Prepare commits and branches
 
-Run relevant local checks for each unit and the integrated result where dependencies matter. Create descriptive branches from the intended base; create child branches from their parent branch for a stack. When the working tree contains several groups, use an isolated staging branch, temporary index, or worktrees as needed to construct the groups without mixing them. Record pre-existing staged changes and preserve their intended grouping; avoid indiscriminate `git add -A`. Verify that untouched edits and staging remain intact. Inspect every staged diff, commit, and eventual `base...head` PR diff before pushing. Never assume a new branch name removes unrelated commits inherited from the current branch.
+Run relevant local checks for each unit, and for the integrated result where units depend on each other.
 
-Push only branches owned by this task. Avoid destructive resets, ordinary force pushes, and direct pushes to the base branch. If a published stack needs history rewritten to propagate a lower-layer fix, first confirm branch ownership and remote state, then use the repository's stack tooling or `--force-with-lease` on the affected task branches only; stop if another person's work could be overwritten. Keep dependencies correct and rerun affected checks after any rewrite.
+Create branches from the intended base, and child branches from their parent in a stack. When the working tree holds several groups, isolate them with a temporary index, staging branch, or worktrees. Record any pre-existing staged changes and keep their grouping; avoid indiscriminate `git add -A`. A new branch name does not shed unrelated commits inherited from the current branch, so check ancestry.
+
+Before pushing, inspect every staged diff, every commit, and each PR's eventual `base...head` diff, and confirm that local changes outside the task are still intact.
+
+Push only branches this task owns. No destructive resets, ordinary force pushes, or direct pushes to the base branch. If a lower-layer fix must be propagated through a published stack, confirm ownership and remote state, then use the repository's stack tooling or `--force-with-lease` on the affected task branches only. Stop if anyone else's work could be overwritten, and rerun affected checks after the rewrite.
 
 ## 3. Open the PRs
 
-Open independent PRs against the intended base. Open a stack from bottom to top, with each child targeting the branch immediately below it. Use GitHub's stack features when available; ordinary PRs with explicit parent bases are a valid fallback. Before publishing each PR, confirm its diff contains only its intended unit. Select a concise title describing the outcome.
+Open independent PRs against the intended base. Open a stack bottom-up, each child targeting the branch directly below it; use GitHub's stack features when available, or ordinary PRs with explicit parent bases. Confirm each diff contains only its intended unit before publishing. Use a concise title that describes the outcome.
 
-Write the shortest PR description that lets a reviewer understand what changed, why, and how it was checked. For a small PR, use a short paragraph and a verification line:
+Write the shortest description that tells a reviewer what changed, why, and how it was checked. A small PR needs a short paragraph and a verification line:
 
 ```markdown
 Fix the reminder using the previous day's date after midnight. The date now comes from the user's timezone.
@@ -39,29 +53,36 @@ Fix the reminder using the previous day's date after midnight. The date now come
 Verification: The midnight-boundary test and relevant checks pass.
 ```
 
-For larger changes, use `## Summary` and `## Verification` when headings help readers scan. Add design decisions, before/after evidence, screenshots, rollout steps, or risks when they affect review or merging. State relevant checks that could not be run. For a stack, link the parent PR, identify the review base and merge order, and update links when the stack exists. Do not fill sections with boilerplate or claim unobserved results.
+For larger changes, use `## Summary` and `## Verification` when headings help readers scan. Add design decisions, before/after evidence, screenshots, rollout steps, or risks only when they affect review or merging. Name relevant checks that could not run. For a stack, link the parent PR, state the review base and merge order, and update links once the stack exists. No boilerplate sections, and no results you did not observe.
 
-## 4. Watch, repair, and merge
+## 4. Watch and repair
 
-Monitor PRs in scope in the same session, normally polling every 30–60 seconds. Use live PR state, checks and failed-job logs, published reviews and comments, and paginated unresolved review threads. Inspect feedback already present at the first pass. Ignore unpublished reviews. A passing result on an old SHA does not validate a new push or a changed base.
+Monitor PRs in scope during the session, normally polling every 30–60 seconds. Read live PR state, checks and failed-job logs, published reviews and comments, and all unresolved review threads, paginating as needed. Handle feedback already present on the first pass; ignore unpublished reviews. A pass on an old SHA does not validate a new push or a changed base.
 
-- Verify feedback against the latest code. Fix valid issues in the appropriate unit, run focused checks, commit, push, and recheck that PR and any descendants. Resolve your own or automated threads only after verifying the fix; let other humans review their threads unless the user authorized resolution. Surface requests that need a human response or renewed approval.
-- Diagnose failed checks before acting. Fix branch-related failures at their source; retry likely transient failures up to three times. Stop with a precise blocker when a recurring failure has no new diagnosis or an external service is unavailable.
-- When the base moves, a lower layer changes, or a stack is rebased or retargeted, inspect every affected diff and review state again. Ensure each remaining child still contains only its own change. Rerun checks required for the resulting heads. Use the repository's stack workflow if supported; otherwise update dependent branches carefully and verify the resulting PR bases.
-- Continue watching pending checks and required or explicitly requested reviews until the requested endpoint is reached or a blocker remains. If no feedback arrives during the session, report the current state. If no checks appear, allow expected workflows to register and inspect repository settings before concluding none apply. Do not invent an optional reviewer as a merge gate.
+- **Feedback:** Verify it against the current code. Fix valid issues in the unit that owns them, run focused checks, commit, push, and recheck that PR and any descendants. Resolve your own or automated threads only after verifying the fix; leave other people's threads to them unless the user authorized resolving them. Surface requests that need a human answer or renewed approval.
+- **Failed checks:** Diagnose before changing code. Fix branch-caused failures at their source. Retry likely transient failures up to three times; stop with a precise blocker when a failure recurs with no new diagnosis or an external service is down.
+- **Moving bases and stacks:** When the base moves or a lower layer changes, is rebased, or is retargeted, recheck every affected diff, check, and review state. Each remaining child must still contain only its own change. Use the repository's stack workflow if it has one; otherwise update dependents carefully and verify their PR bases.
 
-When merging is in scope, merge independent PRs once their gates pass and stacks from the bottom up. After each parent merge, verify the next child's base, diff, checks, and approvals; a stack tool may land multiple layers together only if every included PR is ready. Honor branch protections and the repository's merge strategy. Never self-approve or use an admin bypass. Before each merge, freshly confirm the latest head, applicable checks, valid required approvals, absence of actionable feedback and unresolved threads, and mergeability. If a person must approve or a permission blocks progress, keep watching while the session can run or report the blocker.
+Keep watching pending checks and required or explicitly requested reviews until the requested endpoint is reached or a blocker remains. If no checks appear, give expected workflows time to register and inspect repository settings before concluding none apply. Don't invent an optional reviewer as a merge gate.
 
-After each merge, verify the PR's merged state and resulting commit on the intended base. Fetch the remote, fast-forward local target branches, update dependent local branches and worktrees in a stack, and return to the updated base from a merged task branch. Remove owned merged task branches once no longer needed. Preserve unrelated staged and unstaged changes; if a local branch cannot be updated safely, leave it intact and report the pending sync.
+## 5. Merge and sync
 
-## 5. Report to the user
+Merge only when merging is in scope. Merge independent PRs once their gates pass, and stacks from the bottom up. A stack tool may land several layers together only if every included PR is ready.
 
-Lead with the verified outcome and link the PRs. Match the length to what the user needs: a straightforward merge may need only a sentence, while several PRs or different statuses may warrant compact bullets or a table. Mention checks, meaningful caveats, or remaining work when they affect the outcome; do not restate the PR description.
+Immediately before each merge, freshly confirm the latest head, passing checks for that revision, valid required approvals, no actionable feedback or unresolved blocking threads, and mergeability. Honor branch protections and the repository's merge strategy. Never self-approve or use an admin bypass. If a person must approve or a permission blocks progress, keep watching while the session can run, or report the blocker.
+
+After each merge, verify the PR's merged state and the resulting commit on the intended base. In a stack, recheck the next child's base, diff, checks, and approvals before continuing.
+
+Then sync local state: fetch, fast-forward local target branches, update dependent local branches and worktrees, and move off a merged task branch onto the updated base. Delete owned merged branches once they're no longer needed. Preserve unrelated staged and unstaged changes; if a branch can't be updated safely, leave it intact and report the pending sync.
+
+## 6. Report
+
+Lead with the verified outcome and link the PRs. Match length to what the user needs: a clean merge may take one sentence, while several PRs in different states may warrant compact bullets or a table. Mention checks, caveats, or remaining work only when they affect the outcome, and don't restate the PR description.
 
 For example: `Merged [#42: Fix reminder timezone](PR URL). Tests and CI passed.`
 
-If the requested endpoint leaves PRs open, report observed checks and feedback, any pending next action, and that monitoring ends with this session. If blocked, link the open PRs, name the exact gate and next action, and identify intentional local changes left untouched. Never report a PR as merged until its merged state is verified.
+If the endpoint leaves PRs open, report observed checks and feedback, any pending next action, and that monitoring ends with this session. If blocked, link the open PRs, name the exact gate and next action, and identify intentional local changes left untouched. Never report a PR as merged until its merged state is verified.
 
-## Principle check
+## Principle
 
-Treat a failed run or review comment as evidence about desired behavior, not a reason to accumulate exceptions. Make the smallest correction that preserves coherent commit and PR boundaries, then recheck every affected layer.
+Treat a failed check or review comment as evidence about intended behavior, not a reason to accumulate exceptions. Make the smallest coherent correction, keep commit and PR boundaries intact, and recheck every affected layer.
