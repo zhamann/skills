@@ -6,7 +6,7 @@ Agent skills maintained by Zac Hamann.
 
 ### Prompt
 
-Maintain prompts as clear, minimal specifications by expressing general principles instead of accumulating unnecessary complexity.
+Create, review, and refactor prompts as clear, minimal specifications of intended behavior, generalizing corrections into principles instead of accumulating exceptions.
 
 Install with:
 
@@ -18,7 +18,7 @@ Source: [`prompt/SKILL.md`](./prompt/SKILL.md)
 
 ### Code
 
-Write and refactor code as a clear, minimal expression of intended behavior, favoring coherent design principles over accumulated patches and speculative abstractions.
+Write, fix, review, and refactor code as a clear, minimal expression of intended behavior, favoring governing rules over accumulated patches and speculative abstractions.
 
 Install with:
 
@@ -30,7 +30,7 @@ Source: [`code/SKILL.md`](./code/SKILL.md)
 
 ### Write
 
-Draft or revise prose so it sounds specific, direct, and natural while preserving the author's meaning and intended voice.
+Write prose that is specific, direct, and natural, with a voice suited to its audience and purpose, whether drafting from scratch or revising existing text.
 
 Install with:
 

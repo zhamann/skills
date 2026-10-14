@@ -1,110 +1,44 @@
 ---
 name: code
-description: Write and refactor code as a clear, minimal expression of intended behavior, favoring coherent design principles over accumulated patches and speculative abstractions.
+description: Write, fix, review, and refactor code as a clear, minimal expression of intended behavior. Use for any implementation work where the result should generalize from bugs and examples to the governing rule, preserve required contracts, and avoid both accumulated patches and speculative abstraction.
 ---
 
 # Code
 
 ## Objective
 
-Treat code as an executable specification of intended behavior.
+Treat code as an executable specification of current behavior, not a record of the bugs, workarounds, and shifting assumptions that produced it.
 
-The goal is to implement the required behavior with the least unnecessary structural complexity.
+Implement what is required with the fewest necessary concepts. Complexity should grow only when required behavior or constraints grow. Fewer lines are not the goal; clear invariants, ownership, control flow, and verifiability are.
 
-Code should express what the system does now, not preserve the history of bugs, workarounds, and changing assumptions that produced it.
+## Core principle
 
-Use this skill when writing new code, fixing defects, reviewing an implementation, or refactoring existing code.
-
-## Behavior preservation principle
-
-Implementation complexity should increase only when required behavior or constraints increase.
-
-When multiple implementations satisfy the same requirements, prefer the one that:
-
-- makes invariants and control flow easier to understand,
-- uses fewer independent concepts,
-- fits the existing architecture and conventions,
-- avoids duplicated logic and unnecessary state,
-- is easier to verify and change.
-
-Prefer, in order:
-
-1. Correcting the existing abstraction or responsibility.
-2. Consolidating related logic around a shared invariant.
-3. Replacing special cases with a rule that represents the domain.
-4. Adding a new abstraction or branch only for a genuinely distinct behavior.
-
-A codebase should become more coherent over time, not accumulate the shape of every defect it has encountered.
-
-## Core rule
-
-Bugs, examples, and requested changes are evidence about the design.
-
-They are not automatically reasons to add another conditional, helper, layer, or configuration option.
-
-Convert:
+Bugs, examples, and change requests are evidence about the design, not automatic reasons to add another branch, helper, layer, or option.
 
 ```text
-observed failure -> intended invariant -> appropriate implementation
+observed failure → intended invariant → implementation at the owning boundary
 ```
 
 not:
 
 ```text
-observed failure -> permanent special case
+observed failure → permanent special case
 ```
 
-Determine the intended behavior before choosing the implementation. A failing example shows what happened, but may not reveal the correct boundary, ownership, or general rule.
+A failing example shows what happened. It may not reveal the correct rule, its owner, or its boundary, so establish those before choosing a fix.
 
-## Engineering process
+When several implementations satisfy the requirements, prefer, in order:
 
-### Establish the contract
+1. Correcting the existing responsibility or abstraction.
+2. Consolidating related logic around a shared invariant.
+3. Replacing special cases with a rule that represents the domain.
+4. Adding a branch or abstraction only for genuinely distinct behavior.
 
-Identify the behavior being added or preserved, including relevant inputs, outputs, side effects, failure behavior, compatibility requirements, and performance or security constraints.
+### Example
 
-For a refactor, distinguish observable behavior that must remain stable from implementation details that may change.
+Intended behavior: archived accounts cannot start new jobs. Observed failure: one archived account started a job through the retry endpoint.
 
-### Understand the current design
-
-Inspect the code paths, data flow, tests, and repository conventions that govern the change. Identify where the relevant responsibility and invariant currently live before introducing a new place for them.
-
-### Find accidental complexity
-
-Look for duplicated decisions, scattered invariants, historical branches, unnecessary indirection, premature generalization, conflicting sources of truth, and state that can be derived instead of stored.
-
-### Implement the governing rule
-
-Put the behavior at the boundary or abstraction that owns it. Prefer a direct implementation when the problem is local. Introduce an abstraction when it represents a stable concept with more than one meaningful use, not merely to shorten a function or anticipate unknown requirements.
-
-Keep the change scoped to the requested behavior. Do not use a nearby fix as permission for unrelated cleanup or architectural expansion.
-
-### Simplify the result
-
-Remove code made redundant by the change. Keep naming, data flow, and responsibilities aligned so the implementation can be understood without reconstructing its edit history.
-
-### Validate behavior
-
-Use the strongest practical evidence available: focused tests, type checking, linting, builds, or direct execution. Test the governing invariant and meaningful boundaries, not only the reported example or the internal structure of the implementation.
-
-Confirm that the change:
-
-- satisfies the intended behavior,
-- preserves unrelated behavior and public contracts,
-- handles the broader class represented by the example,
-- introduces no unnecessary abstraction or restriction,
-- leaves the design at least as coherent as before.
-
-## Example: generalizing a defect
-
-Intended behavior:
-
-> Archived accounts cannot start new jobs.
-
-Observed failure:
-
-> One archived account started a job through the retry endpoint.
-
-Poor revision:
+A patch keyed to the incident encodes the instance, not the rule:
 
 ```ts
 if (account.id === "reported-account") {
@@ -112,66 +46,40 @@ if (account.id === "reported-account") {
 }
 ```
 
-This encodes the reported instance rather than the domain rule.
+Enforcing account eligibility at the shared job-start boundary, used by both initial and retried requests, states the rule once and covers every route that starts a job.
 
-Better revision:
+## Workflow
 
-Enforce the account eligibility invariant at the shared job-start boundary used by both initial and retried requests.
+1. **Establish the contract.** Identify inputs, outputs, side effects, failure behavior, compatibility, performance, and security constraints. For a refactor, separate observable behavior that must stay stable from details that may change.
+2. **Understand the current design.** Trace the relevant code paths, data flow, tests, and conventions. Find where the responsibility and its invariant already live before creating a new home for them.
+3. **Find accidental complexity.** Look for duplicated decisions, scattered invariants, historical branches, needless indirection, premature generalization, conflicting sources of truth, and stored state that could be derived.
+4. **Implement the governing rule.** Put behavior at the boundary that owns it. Prefer a direct change when the problem is local. Keep scope to the requested behavior; a nearby fix is not permission for unrelated cleanup or architectural expansion.
+5. **Simplify the result.** Remove code the change made redundant, so the implementation can be understood without reconstructing its edit history.
+6. **Verify.** Use the strongest practical evidence: focused tests, type checks, linting, builds, or direct execution. Test the invariant and its meaningful boundaries, not only the reported example, and confirm unrelated behavior and public contracts still hold.
 
-This represents the intended behavior once and covers every route that starts a job.
+## Design rules
 
-## Design heuristics
+- **Domain over incidents:** Model the category that determines behavior instead of listing known cases. Keep explicit cases when the domain genuinely defines separate behaviors.
+- **One source of truth:** Own each invariant and piece of state in one place. Derive secondary values rather than synchronizing copies.
+- **Local clarity over speculative reuse:** Small duplication can be cheaper than the wrong abstraction. Generalize once the shared concept is stable enough to name.
+- **Rewriting over layering:** When a responsibility changes, update its existing expression. Avoid wrappers, compatibility branches, and parallel paths unless a real compatibility requirement exists.
+- **Semantic over syntactic compression:** Remove concepts that add neither behavior nor clarity. Keep structure that makes constraints, ownership, and failure modes explicit.
+- **Convergence over accumulation:** Repeated work in one area should reinforce a coherent model. If each defect adds another exception, flag, wrapper, or source of truth, revisit the governing abstraction instead of extending the patchwork.
 
-### Prefer domain rules over case lists
-
-Represent the category that determines behavior instead of enumerating known instances. Use explicit cases when the domain genuinely defines separate behaviors.
-
-### Prefer one source of truth
-
-Keep each invariant or piece of state owned in one place. Derive secondary values where practical instead of synchronizing copies.
-
-### Prefer local clarity over speculative reuse
-
-Small duplication can be cheaper than the wrong abstraction. Generalize when the shared concept is understood and stable enough to name.
-
-### Prefer rewriting over layering
-
-When a responsibility has changed, update its existing expression where possible. Avoid wrappers, compatibility branches, or parallel paths that preserve an obsolete design without a real compatibility requirement.
-
-### Prefer semantic compression
-
-Fewer lines are not automatically better. Remove concepts that do not add behavior or clarity. Keep structure that makes constraints, ownership, and failure modes explicit.
-
-## Complexity review
+## Complexity gate
 
 Before adding a branch, abstraction, dependency, configuration option, or state field, ask:
 
 1. What distinct behavior or constraint requires it?
 2. Is the same rule already represented elsewhere?
-3. Can the existing responsibility express it more clearly?
-4. Does this model the domain or memorialize one example?
-5. Would removing it change required behavior?
+3. Could an existing responsibility express it more clearly?
+4. Does it model the domain or memorialize one example?
+5. Would removing it change required behavior or hide an important invariant?
 
 Reject complexity that does not add required behavior, preserve a real contract, or make an important invariant clearer.
 
-## Stability test
-
-A well-maintained implementation should converge.
-
-Repeated work in the same area should reinforce a coherent model. If each defect adds another exception, flag, wrapper, or source of truth, revisit the governing abstraction instead of extending the patchwork.
-
 ## Success criteria
 
-Successful code:
+The change implements the intended behavior, preserves required contracts, handles the broader class the example represents, keeps ownership and invariants clear, fits the surrounding system, and is verified in proportion to its risk. The design is at least as coherent as before.
 
-- implements the intended behavior,
-- preserves required contracts,
-- generalizes beyond the reported example,
-- keeps invariants and ownership clear,
-- fits the surrounding system,
-- avoids speculative or redundant complexity,
-- is verified by evidence proportional to the change.
-
-## Guiding maxim
-
-> Code is not a record of past mistakes. It is an executable specification of current behavior.
+**Guiding maxim:** Code should express what the system does, not how it got there.
