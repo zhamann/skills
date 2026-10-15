@@ -30,7 +30,7 @@ Source: [`code/SKILL.md`](./code/SKILL.md)
 
 ### Write
 
-Write prose that is specific, direct, and natural, with a voice suited to its audience and purpose, whether drafting from scratch or revising existing text.
+Write prose people want to read, with a real point of view and a voice suited to its audience, whether drafting from scratch or revising existing text.
 
 Install with:
 
