@@ -35,6 +35,8 @@ Don't split a single dependent change just to make more PRs. If an apparently in
 
 Run relevant local checks for each unit, and for the integrated result where units depend on each other.
 
+Use Conventional Commits for commit messages: `feat:`, `fix:`, `chore:`, or `build:`, as appropriate. Name branches `<type>/<short-kebab-case-description>`, for example `feat/cook-mode`.
+
 Create branches from the intended base, and child branches from their parent in a stack. When the working tree holds several groups, isolate them with a temporary index, staging branch, or worktrees. Record any pre-existing staged changes and keep their grouping; avoid indiscriminate `git add -A`. A new branch name does not shed unrelated commits inherited from the current branch, so check ancestry.
 
 Before pushing, inspect every staged diff, every commit, and each PR's eventual `base...head` diff, and confirm that local changes outside the task are still intact.
@@ -43,7 +45,7 @@ Push only branches this task owns. No destructive resets, ordinary force pushes,
 
 ## 3. Open the PRs
 
-Open independent PRs against the intended base. Open a stack bottom-up, each child targeting the branch directly below it; use GitHub's stack features when available, or ordinary PRs with explicit parent bases. Confirm each diff contains only its intended unit before publishing. Use a concise title that describes the outcome.
+Open independent PRs against the intended base. Open a stack bottom-up, each child targeting the branch directly below it; use GitHub's stack features when available, or ordinary PRs with explicit parent bases. Confirm each diff contains only its intended unit before publishing. Use a concise Conventional Commits title that describes the outcome, for example `fix: use the user's timezone for reminders`.
 
 Write the shortest description that tells a reviewer what changed, why, and how it was checked. A small PR needs a short paragraph and a verification line:
 
@@ -67,9 +69,9 @@ Keep watching pending checks and required or explicitly requested reviews until 
 
 ## 5. Merge and sync
 
-Merge only when merging is in scope. Merge independent PRs once their gates pass, and stacks from the bottom up. A stack tool may land several layers together only if every included PR is ready.
+Merge only when merging is in scope. Squash-merge each PR so `main` gets one commit per PR. Use the Conventional Commits PR title as the squash commit subject. Merge independent PRs once their gates pass, and stacks from the bottom up. A stack tool may land several layers together only if every included PR is ready and each gets its own squash commit.
 
-Immediately before each merge, freshly confirm the latest head, passing checks for that revision, valid required approvals, no actionable feedback or unresolved blocking threads, and mergeability. Honor branch protections and the repository's merge strategy. Never self-approve or use an admin bypass. If a person must approve or a permission blocks progress, keep watching while the session can run, or report the blocker.
+Immediately before each merge, freshly confirm the latest head, passing checks for that revision, valid required approvals, no actionable feedback or unresolved blocking threads, and mergeability. Honor branch protections. If squash merging is unavailable, report the blocker. Never self-approve or use an admin bypass. If a person must approve or a permission blocks progress, keep watching while the session can run, or report the blocker.
 
 After each merge, verify the PR's merged state and the resulting commit on the intended base. In a stack, recheck the next child's base, diff, checks, and approvals before continuing.
 
@@ -79,7 +81,7 @@ Then sync local state: fetch, fast-forward local target branches, update depende
 
 Lead with the verified outcome and link the PRs. Match length to what the user needs: a clean merge may take one sentence, while several PRs in different states may warrant compact bullets or a table. Mention checks, caveats, or remaining work only when they affect the outcome, and don't restate the PR description.
 
-For example: `Merged [#42: Fix reminder timezone](PR URL). Tests and CI passed.`
+For example: `Merged [#42: fix: use the user's timezone for reminders](PR URL). Tests and CI passed.`
 
 If the endpoint leaves PRs open, report observed checks and feedback, any pending next action, and that monitoring ends with this session. If blocked, link the open PRs, name the exact gate and next action, and identify intentional local changes left untouched. Never report a PR as merged until its merged state is verified.
 
