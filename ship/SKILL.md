@@ -47,15 +47,11 @@ Push only branches this task owns. No destructive resets, ordinary force pushes,
 
 Open independent PRs against the intended base. Open a stack bottom-up, each child targeting the branch directly below it; use GitHub's stack features when available, or ordinary PRs with explicit parent bases. Confirm each diff contains only its intended unit before publishing. Use a concise Conventional Commits title that describes the outcome, for example `fix: use the user's timezone for reminders`.
 
-Write the shortest description that tells a reviewer what changed, why, and how it was checked. A small PR needs a short paragraph and a verification line:
+Write the shortest PR description that explains what changed and why. Include additional context only when it materially helps someone review or merge the change, such as a relevant check that could not run, a risk, or rollout steps; for a stack, link the parent PR and state the merge order. Never claim results you did not observe.
 
 ```markdown
-Fix the reminder using the previous day's date after midnight. The date now comes from the user's timezone.
-
-Verification: The midnight-boundary test and relevant checks pass.
+Fix reminders using the previous day's date after midnight by taking the date from the user's timezone.
 ```
-
-For larger changes, use `## Summary` and `## Verification` when headings help readers scan. Add design decisions, before/after evidence, screenshots, rollout steps, or risks only when they affect review or merging. Name relevant checks that could not run. For a stack, link the parent PR, state the review base and merge order, and update links once the stack exists. No boilerplate sections, and no results you did not observe.
 
 ## 4. Watch and repair
 
