@@ -1,6 +1,6 @@
 ---
 name: ship
-description: Turn completed work, including mixed uncommitted changes, into coherent commits and one or more GitHub pull requests, independent or stacked according to their dependencies. Monitor checks and reviews, fix issues, and merge when requested. Use when asked to open a PR, watch for feedback, ship, land, or handle any part of the PR lifecycle.
+description: Turn completed work, including mixed uncommitted changes, into coherent commits and one or more GitHub pull requests, independent or stacked according to their dependencies. Monitor checks and reviews, fix issues, and merge when requested. Use before creating any commit, push, or pull request, including when the user didn't mention them and they follow from other instructions, and when asked to watch for feedback, ship, land, or handle any part of the PR lifecycle.
 ---
 
 # Ship
@@ -9,6 +9,7 @@ description: Turn completed work, including mixed uncommitted changes, into cohe
 
 Carry intentional code changes to the endpoint the user asks for, and no further:
 
+- **Commit:** create the commits on task branches, and push them if asked.
 - **Open:** create the PRs and leave them open.
 - **Watch:** open or continue PRs, then address checks and reviews during the session; the PRs stay open.
 - **Ship / land:** merge and verify the result.
@@ -75,7 +76,7 @@ Then sync local state: fetch, fast-forward local target branches, update depende
 
 ## 6. Report
 
-Lead with the verified outcome and link the PRs. Match length to what the user needs: a clean merge may take one sentence, while several PRs in different states may warrant compact bullets or a table. Mention checks, caveats, or remaining work only when they affect the outcome, and don't restate the PR description.
+Lead with the verified outcome and link any PRs. Match length to what the user needs: a clean merge may take one sentence, while several PRs in different states may warrant compact bullets or a table. Mention checks, caveats, or remaining work only when they affect the outcome, and don't restate the PR description.
 
 For example: `Merged [#42: fix: use the user's timezone for reminders](PR URL). Tests and CI passed.`
 
